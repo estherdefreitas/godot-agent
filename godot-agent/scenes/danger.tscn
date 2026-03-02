@@ -4,15 +4,16 @@
 [ext_resource type="Texture2D" uid="uid://c4mftwmkrlitq" path="res://assets/sprites/world_tileset.png" id="2_mlpom"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uo4qn"]
-size = Vector2(47, 44)
+size = Vector2(60, 45)
 
 [node name="Area2D" type="Area2D" unique_id=273438715]
 script = ExtResource("1_nq5mv")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=234503815]
+position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_uo4qn")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1935955045]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1935955045 groups=["dangers"]]
 texture = ExtResource("2_mlpom")
 region_enabled = true
 region_rect = Rect2(0.8135109, 192.07506, 62.092148, 48.16844)
