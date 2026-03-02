@@ -23,8 +23,11 @@ var screen_size
 
 @onready var perception_area: Area2D = $PerceptionArea
 @onready var perception_shape: CollisionShape2D = $PerceptionArea/CollisionShape2D
+@onready var energy_bar: ProgressBar = $EnergyBar
 
 func _ready():
+	energy_bar.max_value = max_energy
+	energy_bar.value = energy
 	screen_size = get_viewport_rect().size
 	energy = max_energy
 	last_position = global_position
@@ -183,6 +186,7 @@ func _apply_energy_decay(delta):
 		if a.is_in_group("dangers"):
 			energy -= danger_damage_per_sec * delta
 	energy = clamp(energy, 0.0, max_energy)
+	energy_bar.value = energy
 
 func _check_dead():
 	if energy <= 0 and not is_dead:

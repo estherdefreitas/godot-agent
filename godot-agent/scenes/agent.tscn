@@ -57,9 +57,14 @@ position = Vector2(0, -4)
 sprite_frames = SubResource("SpriteFrames_go1c3")
 animation = &"idle"
 autoplay = "idle"
-frame_progress = 0.22147165
+frame_progress = 0.39540225
 
 [node name="PerceptionArea" type="Area2D" parent="." unique_id=19789054]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PerceptionArea" unique_id=321570903]
 shape = SubResource("CircleShape2D_umeaf")
+
+[node name="EnergyBar" type="ProgressBar" parent="." unique_id=677125473]
+offset_right = 4.0
+offset_bottom = 27.0
+max_value = 150.0
