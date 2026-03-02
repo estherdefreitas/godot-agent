@@ -1,19 +1,20 @@
 [gd_scene format=3 uid="uid://dn47ln07nvk3f"]
 
 [ext_resource type="Script" uid="uid://ba1fj3xusbsru" path="res://scripts/resource.gd" id="1_cngf4"]
-[ext_resource type="Texture2D" uid="uid://dsmlk3b8hopd3" path="res://assets/sprites/fruit.png" id="2_cngf4"]
+[ext_resource type="Texture2D" uid="uid://c4mftwmkrlitq" path="res://assets/sprites/world_tileset.png" id="2_cngf4"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cngf4"]
 radius = 5.0
 
-[node name="Resource" type="Area2D" unique_id=245027381]
+[node name="Resource" type="Area2D" unique_id=245027381 groups=["mushrooms"]]
+collision_layer = 2
+collision_mask = 0
 script = ExtResource("1_cngf4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1794680043]
 shape = SubResource("CircleShape2D_cngf4")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1650857761]
-position = Vector2(0, -1)
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=995511421]
 texture = ExtResource("2_cngf4")
 region_enabled = true
-region_rect = Rect2(0, 48.822987, 15.411514, 15.177013)
+region_rect = Rect2(112.92076, 112.55075, 14.419357, 16.467438)

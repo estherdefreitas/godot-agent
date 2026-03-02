@@ -1,7 +1,7 @@
 extends Node2D
 
 const MAP_BOUNDS: Rect2 = Rect2(0, 0, 1024, 768)
-const INITIAL_MUSHROOMS := 20
+const INITIAL_MUSHROOMS := 10
 const DANGER_COUNT := 3
 const SPAWN_ATTEMPTS := 100
 const AGENT_COUNT := 2

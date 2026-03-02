@@ -125,33 +125,96 @@ func _perform_action(delta):
 
 func _action_explore(delta):
 	wander_change_time -= delta
+
 	if wander_change_time <= 0:
+
 		var best_direction = Vector2.ZERO
 		var best_score = INF
+
 		for i in 16:
 			var angle = i * TAU / 16
 			var dir = Vector2(cos(angle), sin(angle)).normalized()
 			var test_pos = global_position + dir * 120
+
 			var score = 0.0
-			if test_pos.x < 20 or test_pos.x > screen_size.x - 20:
-				score += 1000
-			if test_pos.y < 20 or test_pos.y > screen_size.y - 20:
-				score += 1000
+
+			# ---------------------------
+			# 1️⃣ Penalidade por borda (dinâmica)
+			# ---------------------------
+
+			var energy_ratio = energy / max_energy
+			var risk_factor = 1.0 - energy_ratio
+
+			# Penalidade base
+			var border_penalty = 0.0
+
+			if test_pos.x < 40 or test_pos.x > screen_size.x - 40:
+				border_penalty += 2000
+
+			if test_pos.y < 40 or test_pos.y > screen_size.y - 40:
+				border_penalty += 2000
+
+			# 🔥 Ajuste dinâmico
+			# Se energia baixa → penalidade diminui
+			border_penalty *= (1.0 - risk_factor * 0.8)
+
+			# ---------------------------
+			# 2️⃣ Verifica recurso perto
+			# ---------------------------
+
+			var reward_bonus = 0.0
+			var resource_near_border = false
+
+			for mushroom in seen_mushrooms:
+				var dist = test_pos.distance_to(mushroom.global_position)
+
+				if dist < 150:
+					resource_near_border = true
+					reward_bonus -= 2500  # recompensa maior que penalidade
+
+			# Se houver recurso → reduz penalidade
+			if resource_near_border:
+				score += reward_bonus
+			else:
+				score += border_penalty
+
+			# ---------------------------
+			# 3️⃣ Penalidade por perigo
+			# ---------------------------
+
 			for danger in seen_dangers:
 				var dist = test_pos.distance_to(danger.global_position)
+
 				if dist < danger.radius:
 					score += 5000
 				elif dist < danger.radius + 40:
 					score += 2000
-			var cell = Vector2(int(test_pos.x / memory_cell_size), int(test_pos.y / memory_cell_size))
+
+			# ---------------------------
+			# 4️⃣ Penalidade por memória
+			# ---------------------------
+
+			var cell = Vector2(
+				int(test_pos.x / memory_cell_size),
+				int(test_pos.y / memory_cell_size)
+			)
+
 			score += visited_cells.get(cell, 0) * 10
+
+			# ---------------------------
+			# Escolhe melhor direção
+			# ---------------------------
+
 			if score < best_score:
 				best_score = score
 				best_direction = dir
+
 		if best_direction == Vector2.ZERO:
 			best_direction = Vector2.RIGHT
+
 		wander_direction = best_direction
 		wander_change_time = 1.0
+
 	velocity = wander_direction * max_speed * 0.6
 
 func _action_seek():

@@ -47,6 +47,7 @@ animations = [{
 radius = 68.24954
 
 [node name="Agent" type="CharacterBody2D" unique_id=1230767359]
+collision_mask = 9
 script = ExtResource("1_umeaf")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=295931052]
@@ -57,9 +58,10 @@ position = Vector2(0, -4)
 sprite_frames = SubResource("SpriteFrames_go1c3")
 animation = &"idle"
 autoplay = "idle"
-frame_progress = 0.39540225
+frame_progress = 0.62893176
 
 [node name="PerceptionArea" type="Area2D" parent="." unique_id=19789054]
+collision_mask = 7
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PerceptionArea" unique_id=321570903]
 shape = SubResource("CircleShape2D_umeaf")
