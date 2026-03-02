@@ -35,11 +35,17 @@ func _ready():
 	perception_area.monitorable = true
 
 func _physics_process(delta: float) -> void:
+	if state == State.IDLE:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	_update_perception()
 	_decide_goal()
 	_perform_action(delta)
 	_apply_energy_decay(delta)
 	_check_dead()
+	position.x = clamp(position.x, 0, screen_size.x)
+	position.y = clamp(position.y, 0, screen_size.y)
 
 	position.x = clamp(position.x, 0, screen_size.x)
 	position.y = clamp(position.y, 0, screen_size.y)
@@ -192,8 +198,11 @@ func _apply_energy_decay(delta: float) -> void:
 			energy -= danger_damage_per_sec * delta
 
 	energy = clamp(energy, 0.0, max_energy)
+	print("energia", energy)
 
 func _check_dead() -> void:
-	if energy <= 0.0:
+	if energy <= 0.0 and state != State.IDLE:
+		energy = 0
 		state = State.IDLE
 		velocity = Vector2.ZERO
+		print("AGENTE MORREU")
