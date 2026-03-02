@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://bub1yv7thek7i"]
+
+[ext_resource type="Texture2D" uid="uid://ckdfpdtck2p1c" path="res://assets/sprites/knight.png" id="1_b2pv0"]
+[ext_resource type="Script" uid="uid://n0u8qvw7nikc" path="res://scripts/agent.gd" id="1_umeaf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_umeaf"]
+atlas = ExtResource("1_b2pv0")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yc63n"]
+atlas = ExtResource("1_b2pv0")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lug0u"]
+atlas = ExtResource("1_b2pv0")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dg1j7"]
+atlas = ExtResource("1_b2pv0")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_go1c3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_umeaf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yc63n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lug0u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dg1j7")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 2.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_umeaf"]
+radius = 6.0
+height = 18.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_b2pv0"]
+radius = 71.0
+height = 142.0
+
+[node name="Agent" type="CharacterBody2D" unique_id=1230767359]
+script = ExtResource("1_umeaf")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=612987359]
+position = Vector2(0, -4)
+sprite_frames = SubResource("SpriteFrames_go1c3")
+animation = &"idle"
+autoplay = "idle"
+frame_progress = 0.77392495
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=295931052]
+shape = SubResource("CapsuleShape2D_umeaf")
+
+[node name="PerceptionArea" type="Area2D" parent="." unique_id=19789054]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PerceptionArea" unique_id=321570903]
+shape = SubResource("CapsuleShape2D_b2pv0")

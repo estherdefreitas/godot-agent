@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://v5qit0fxcepc"]
+
+[ext_resource type="PackedScene" uid="uid://bub1yv7thek7i" path="res://scenes/agent.tscn" id="1_nnsk1"]
+[ext_resource type="Script" uid="uid://b00sxcgeyd4gd" path="res://scripts/world.gd" id="1_qfnet"]
+[ext_resource type="PackedScene" uid="uid://fma6cp2a5vkl" path="res://scenes/danger.tscn" id="4_4mrxx"]
+[ext_resource type="PackedScene" uid="uid://dn47ln07nvk3f" path="res://scenes/resource.tscn" id="6_w7kh3"]
+
+[node name="World" type="Node2D" unique_id=1914338313]
+script = ExtResource("1_qfnet")
+MushroomScene = ExtResource("6_w7kh3")
+DangerScene = ExtResource("4_4mrxx")
+AgentScene = ExtResource("1_nnsk1")
+
+[node name="AgentHolder" type="Node2D" parent="." unique_id=1265467324]
+
+[node name="Mushrooms" type="Node2D" parent="." unique_id=533017864]
+
+[node name="Dangers" type="Node2D" parent="." unique_id=373578453]

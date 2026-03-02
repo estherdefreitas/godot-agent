@@ -1,0 +1,78 @@
+# scenes/Game.gd
+extends Node2D
+
+const MAP_BOUNDS: Rect2 = Rect2(0, 0, 1024, 768)
+const INITIAL_MUSHROOMS := 7
+const DANGER_COUNT := 3
+const SPAWN_ATTEMPTS := 100
+
+@export var MushroomScene: PackedScene
+@export var DangerScene: PackedScene 
+@export var AgentScene: PackedScene 
+
+@onready var mushrooms_parent: Node2D = $Mushrooms
+@onready var dangers_parent: Node2D = $Dangers
+@onready var agent_parent: Node2D = $AgentHolder
+
+func _ready():
+	# Instancia o agente
+	var agent = AgentScene.instantiate()
+	agent_parent.add_child(agent)
+	agent.global_position = MAP_BOUNDS.size / 2
+	# Gera perigos e cogumelos
+	_spawn_dangers(DANGER_COUNT)
+	_spawn_initial_mushrooms(INITIAL_MUSHROOMS)
+
+func _spawn_initial_mushrooms(n: int) -> void:
+	for i in n:
+		_spawn_mushroom()
+
+func _spawn_dangers(n: int) -> void:
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	for i in n:
+		var danger = DangerScene.instantiate()
+		dangers_parent.add_child(danger)
+		# posição aleatória dentro dos bounds
+		danger.global_position = _random_position_safe(rng)
+		# escala / raio aleatório
+		var scale = rng.randf_range(0.6, 1.6)
+		danger.set_radius_scale(scale)
+
+func _spawn_mushroom() -> void:
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	for attempt in SPAWN_ATTEMPTS:
+		var pos = _random_position_safe(rng)
+		# não spawnar dentro de um danger
+		var collides = false
+		for d in dangers_parent.get_children():
+			if d.global_position.distance_to(pos) < d.radius + 24:
+				collides = true
+				break
+		if collides:
+			continue
+		# também evitar spawn muito perto do agente
+		var agent = agent_parent.get_child(0) if agent_parent.get_child_count() > 0 else null
+		if agent and agent.global_position.distance_to(pos) < 40:
+			continue
+		var m = MushroomScene.instantiate()
+		mushrooms_parent.add_child(m)
+		m.global_position = pos
+		m.collected.connect(on_mushroom_collected)
+		return
+	# se não achou posição após tentativas, coloca numa posição fixa fallback
+	var fallback = MushroomScene.instantiate()
+	mushrooms_parent.add_child(fallback)
+	fallback.global_position = MAP_BOUNDS.size / 2 + Vector2(50, 50)
+	fallback.collected.connect(on_mushroom_collected)
+
+func _random_position_safe(rng: RandomNumberGenerator) -> Vector2:
+	var x = rng.randi_range(MAP_BOUNDS.position.x + 32, MAP_BOUNDS.position.x + MAP_BOUNDS.size.x - 32)
+	var y = rng.randi_range(MAP_BOUNDS.position.y + 32, MAP_BOUNDS.position.y + MAP_BOUNDS.size.y - 32)
+	return Vector2(x, y)
+
+# Chamado por Mushroom quando coletado
+func on_mushroom_collected():
+	print("Cogumelo coletado!")	
+	_spawn_mushroom()
