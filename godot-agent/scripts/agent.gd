@@ -4,6 +4,8 @@ enum State { EXPLORE, SEEK, FLEE, IDLE }
 
 var screen_size
 
+var last_position: Vector2
+@export var energy_cost_per_pixel: float = 0.02
 @export var max_speed: float = 140.0
 @export var perception_radius: float = 160.0
 @export var max_energy: float = 100.0
@@ -20,6 +22,7 @@ var flee_from_position: Vector2 = Vector2.ZERO
 @onready var perception_shape: CollisionShape2D = $PerceptionArea/CollisionShape2D
 
 func _ready():
+	last_position = global_position
 	screen_size = get_viewport_rect().size
 	name = "Agent"
 	energy = max_energy
@@ -175,9 +178,15 @@ func _collect_mushroom(mushroom: Node) -> void:
 # ------------------ ENERGY ------------------
 
 func _apply_energy_decay(delta: float) -> void:
-	if velocity.length() > 1.0:
-		energy -= energy_depletion_move * delta
+	# -------- Gasto por movimento real --------
+	var distance_moved = global_position.distance_to(last_position)
 
+	if distance_moved > 0:
+		energy -= distance_moved * energy_cost_per_pixel
+
+	last_position = global_position
+
+	# -------- Dano em áreas perigosas --------
 	for a in perception_area.get_overlapping_areas():
 		if a.is_in_group("dangers"):
 			energy -= danger_damage_per_sec * delta
