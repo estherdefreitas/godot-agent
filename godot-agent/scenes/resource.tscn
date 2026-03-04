@@ -4,17 +4,19 @@
 [ext_resource type="Texture2D" uid="uid://c4mftwmkrlitq" path="res://assets/sprites/world_tileset.png" id="2_cngf4"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cngf4"]
-radius = 5.0
+radius = 12.0415945
 
 [node name="Resource" type="Area2D" unique_id=245027381 groups=["mushrooms"]]
 collision_layer = 2
 collision_mask = 0
 script = ExtResource("1_cngf4")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1794680043]
-shape = SubResource("CircleShape2D_cngf4")
-
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=995511421]
+position = Vector2(4.7683716e-07, -4.7683716e-07)
+scale = Vector2(1.3571428, 1.3571429)
 texture = ExtResource("2_cngf4")
 region_enabled = true
 region_rect = Rect2(112.92076, 112.55075, 14.419357, 16.467438)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1794680043]
+shape = SubResource("CircleShape2D_cngf4")

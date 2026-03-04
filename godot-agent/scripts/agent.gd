@@ -6,9 +6,11 @@ enum State { EXPLORE, SEEK, FLEE }
 @export var perception_radius: float = 160.0
 @export var max_energy: float = 100.0
 @export var energy_threshold: float = 30.0
-@export var energy_cost_per_pixel: float = 0.02
+@export var energy_cost_per_pixel: float = 0.05
 @export var danger_damage_per_sec: float = 20.0
 @export var memory_cell_size: int = 80
+
+var screen_size
 
 var state: State = State.EXPLORE
 var energy: float
@@ -19,7 +21,9 @@ var flee_from_position: Vector2 = Vector2.ZERO
 var last_position: Vector2
 
 var visited_cells := {}
-var screen_size
+var recent_positions: Array = []
+var max_recent_positions := 12
+var memory_decay_rate := 0.8
 
 @onready var perception_area: Area2D = $PerceptionArea
 @onready var perception_shape: CollisionShape2D = $PerceptionArea/CollisionShape2D
@@ -138,14 +142,10 @@ func _action_explore(delta):
 
 			var score = 0.0
 
-			# ---------------------------
-			# 1️⃣ Penalidade por borda (dinâmica)
-			# ---------------------------
-
+			# Border penalty
 			var energy_ratio = energy / max_energy
 			var risk_factor = 1.0 - energy_ratio
 
-			# Penalidade base
 			var border_penalty = 0.0
 
 			if test_pos.x < 40 or test_pos.x > screen_size.x - 40:
@@ -154,14 +154,10 @@ func _action_explore(delta):
 			if test_pos.y < 40 or test_pos.y > screen_size.y - 40:
 				border_penalty += 2000
 
-			# 🔥 Ajuste dinâmico
-			# Se energia baixa → penalidade diminui
+			# if energy is low, reduce penalty
 			border_penalty *= (1.0 - risk_factor * 0.8)
 
-			# ---------------------------
-			# 2️⃣ Verifica recurso perto
-			# ---------------------------
-
+			# check if there's a resource near border
 			var reward_bonus = 0.0
 			var resource_near_border = false
 
@@ -170,17 +166,15 @@ func _action_explore(delta):
 
 				if dist < 150:
 					resource_near_border = true
-					reward_bonus -= 2500  # recompensa maior que penalidade
+					reward_bonus -= 2500  # reward > penalty
 
-			# Se houver recurso → reduz penalidade
+			# reduces penalty if there is a resource
 			if resource_near_border:
 				score += reward_bonus
 			else:
 				score += border_penalty
 
-			# ---------------------------
-			# 3️⃣ Penalidade por perigo
-			# ---------------------------
+			# Danger penalty
 
 			for danger in seen_dangers:
 				var dist = test_pos.distance_to(danger.global_position)
@@ -190,21 +184,24 @@ func _action_explore(delta):
 				elif dist < danger.radius + 40:
 					score += 2000
 
-			# ---------------------------
-			# 4️⃣ Penalidade por memória
-			# ---------------------------
+			# Memory penalty
 
 			var cell = Vector2(
 				int(test_pos.x / memory_cell_size),
 				int(test_pos.y / memory_cell_size)
 			)
 
-			score += visited_cells.get(cell, 0) * 10
+			# Cell penalty
+			score += visited_cells.get(cell, 0) * 15
 
-			# ---------------------------
-			# Escolhe melhor direção
-			# ---------------------------
+			# Recent position penalty
+			for recent_pos in recent_positions:
+				if test_pos.distance_to(recent_pos) < 50:
+					score += 300
 
+			# choose best direction
+			
+			score += rng.randf_range(-50, 50)
 			if score < best_score:
 				best_score = score
 				best_direction = dir
@@ -214,7 +211,6 @@ func _action_explore(delta):
 
 		wander_direction = best_direction
 		wander_change_time = 1.0
-
 	velocity = wander_direction * max_speed * 0.6
 
 func _action_seek():
@@ -227,9 +223,15 @@ func _action_seek():
 		_collect_mushroom(target_mushroom)
 
 func _action_flee():
+
 	var dir = (global_position - flee_from_position).normalized()
-	velocity = dir * max_speed * 1.1
-	if global_position.distance_to(flee_from_position) > perception_radius * 1.2:
+
+	velocity = dir * max_speed * 1.2
+
+	# exits state when is safe
+	var safe_distance = perception_radius + 60
+
+	if global_position.distance_to(flee_from_position) > safe_distance:
 		state = State.EXPLORE
 
 func _collect_mushroom(mushroom):
@@ -241,13 +243,16 @@ func _collect_mushroom(mushroom):
 	state = State.EXPLORE
 
 func _apply_energy_decay(delta):
-	var dist = global_position.distance_to(last_position)
-	if dist > 0:
-		energy -= dist * energy_cost_per_pixel
+
+	var dist_moved = global_position.distance_to(last_position)
+
+	if dist_moved > 0:
+		energy -= dist_moved * energy_cost_per_pixel
+
 	last_position = global_position
-	for a in perception_area.get_overlapping_areas():
-		if a.is_in_group("dangers"):
-			energy -= danger_damage_per_sec * delta
+
+	
+
 	energy = clamp(energy, 0.0, max_energy)
 	energy_bar.value = energy
 
@@ -258,7 +263,24 @@ func _check_dead():
 		velocity = Vector2.ZERO
 
 func _register_current_cell():
-	var cell = Vector2(int(global_position.x / memory_cell_size), int(global_position.y / memory_cell_size))
+	var cell = Vector2(
+		int(global_position.x / memory_cell_size),
+		int(global_position.y / memory_cell_size)
+	)
+
+	# Incrementa célula atual
 	if not visited_cells.has(cell):
 		visited_cells[cell] = 0
 	visited_cells[cell] += 1
+
+	# 🔥 Decaimento da memória global
+	for key in visited_cells.keys():
+		visited_cells[key] *= memory_decay_rate
+		if visited_cells[key] < 0.1:
+			visited_cells.erase(key)
+
+	# 🧠 Memória de caminho recente (anti loop curto)
+	recent_positions.append(global_position)
+
+	if recent_positions.size() > max_recent_positions:
+		recent_positions.pop_front()

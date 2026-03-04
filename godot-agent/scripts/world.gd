@@ -70,8 +70,12 @@ func _spawn_mushroom() -> void:
 	fallback.collected.connect(on_mushroom_collected)
 
 func _random_position_safe(rng: RandomNumberGenerator) -> Vector2:
-	var x = rng.randi_range(MAP_BOUNDS.position.x + 32, MAP_BOUNDS.position.x + MAP_BOUNDS.size.x - 32)
-	var y = rng.randi_range(MAP_BOUNDS.position.y + 32, MAP_BOUNDS.position.y + MAP_BOUNDS.size.y - 32)
+	var rect = get_viewport_rect()
+	var margin = 40
+
+	var x = rng.randi_range(margin, rect.size.x - margin)
+	var y = rng.randi_range(margin, rect.size.y - margin)
+
 	return Vector2(x, y)
 
 func on_mushroom_collected():

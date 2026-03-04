@@ -3,10 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://ckdfpdtck2p1c" path="res://assets/sprites/knight.png" id="1_b2pv0"]
 [ext_resource type="Script" uid="uid://n0u8qvw7nikc" path="res://scripts/agent.gd" id="1_umeaf"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_umeaf"]
-radius = 6.0
-height = 18.0
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_umeaf"]
 atlas = ExtResource("1_b2pv0")
 region = Rect2(0, 0, 32, 32)
@@ -43,6 +39,10 @@ animations = [{
 "speed": 2.0
 }]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_umeaf"]
+radius = 11.0
+height = 32.0
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_umeaf"]
 radius = 68.24954
 
@@ -50,17 +50,20 @@ radius = 68.24954
 collision_mask = 9
 script = ExtResource("1_umeaf")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=295931052]
-shape = SubResource("CapsuleShape2D_umeaf")
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=612987359]
-position = Vector2(0, -4)
+position = Vector2(9.536743e-07, -7.999999)
+scale = Vector2(1.75, 1.75)
 sprite_frames = SubResource("SpriteFrames_go1c3")
 animation = &"idle"
 autoplay = "idle"
 frame_progress = 0.62893176
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=295931052]
+position = Vector2(0, -1)
+shape = SubResource("CapsuleShape2D_umeaf")
+
 [node name="PerceptionArea" type="Area2D" parent="." unique_id=19789054]
+visible = false
 collision_mask = 7
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PerceptionArea" unique_id=321570903]

@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bub1yv7thek7i" path="res://scenes/agent.tscn" id="1_nnsk1"]
 [ext_resource type="Script" uid="uid://b00sxcgeyd4gd" path="res://scripts/world.gd" id="1_qfnet"]
 [ext_resource type="PackedScene" uid="uid://fma6cp2a5vkl" path="res://scenes/danger.tscn" id="4_4mrxx"]
+[ext_resource type="Texture2D" uid="uid://b3v5a8f8mt08j" path="res://assets/sprites/bg.jpg" id="5_71j4m"]
 [ext_resource type="PackedScene" uid="uid://dn47ln07nvk3f" path="res://scenes/resource.tscn" id="6_w7kh3"]
 
 [node name="World" type="Node2D" unique_id=1914338313]
@@ -10,6 +11,12 @@ script = ExtResource("1_qfnet")
 MushroomScene = ExtResource("6_w7kh3")
 DangerScene = ExtResource("4_4mrxx")
 AgentScene = ExtResource("1_nnsk1")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1960862370]
+modulate = Color(1, 1, 1, 0.6627451)
+position = Vector2(579.25, 327.24997)
+scale = Vector2(5.091111, 2.8777778)
+texture = ExtResource("5_71j4m")
 
 [node name="AgentHolder" type="Node2D" parent="." unique_id=1265467324]
 
